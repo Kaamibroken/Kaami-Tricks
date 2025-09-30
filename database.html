@@ -2,131 +2,211 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>💔 BUNNY BROKEN 💔 Database</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bunny Broken 💔 SIM Database</title>
+
+  <!-- ✅ Monetag verification -->
+  <meta name="monetag" content="b805f1bd7c6023d0341a4d15bd8fe547">
+
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: black;
-      color: white;
-      text-align: center;
+      background: linear-gradient(270deg, #7f5af0, #2cb67d, #00c6ff, #ff5f6d);
+      background-size: 800% 800%;
+      animation: gradientShift 15s ease infinite;
+      font-family: sans-serif;
     }
-    h1 {
-      font-size: 26px;
-      margin-top: 20px;
-      background: linear-gradient(90deg, red, yellow, cyan, violet);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: glow 2s infinite alternate;
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-    @keyframes glow {
-      from { text-shadow: 0 0 10px red; }
-      to { text-shadow: 0 0 20px cyan; }
+    .bunny-title {
+      text-shadow: 0px 0px 20px rgba(127,90,240,0.8), 
+                   0px 0px 40px rgba(44,182,125,0.8);
     }
-    .box {
-      margin: 30px auto;
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 12px;
+    .loading-dots span { animation: blink 1.5s infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.3s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.6s; }
+    @keyframes blink { 0%,80%,100% {opacity:0;} 40%{opacity:1;} }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #ff5f6d;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px auto;
     }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
+    @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+    .btn-spinner {
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top: 4px solid #fff;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      animation: spin 1s linear infinite;
     }
-    input { text-align: center; }
-    button {
-      cursor: pointer;
-      background: red;
-      color: white;
-      font-weight: bold;
+    #errorMsg, #phoneError {
+      color:#ff6b6b; font-weight:bold; display:none; margin-bottom:8px; text-align:center;
     }
-    button:hover { background: darkred; }
-    .error { color: #ff4444; margin-top: 10px; font-weight: bold; }
-    .success { color: #00ff00; margin-top: 10px; font-weight: bold; }
-    .loader { color: yellow; font-size: 18px; margin-top: 10px; animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0.5; } }
-
-    .data-card {
-      margin-top: 15px;
-      background: rgba(255,255,255,0.1);
-      padding: 15px;
-      border-radius: 10px;
-      text-align: left;
-    }
-    .data-card p {
-      margin: 6px 0;
-      font-size: 15px;
-      color: #ddd;
-    }
-    .copy-btn {
-      background: #06b6d4;
-      margin-top: 10px;
-    }
-    .copy-btn:hover { background: #0891b2; }
   </style>
 </head>
-<body>
-  <h1>💔 BUNNY BROKEN 💔 DATABASE 📲</h1>
-  <div class="box">
-    <input type="text" id="numberInput" placeholder="Enter Number e.g. 923001234567">
-    <button onclick="validateNumber()">Search</button>
-    <div id="message"></div>
-    <div id="result"></div>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 text-center relative">
+  <h1 class="text-3xl bunny-title font-extrabold text-white mb-6">🔑 Login Key</h1>
+  <input id="loginKey" type="text" placeholder="Enter your login key" 
+         class="w-full px-4 py-3 rounded-lg border border-white/30 bg-white/20 text-white placeholder-gray-300 mb-2"/>
+  <p id="loginError" class="text-red-400 font-semibold mb-4 hidden">❌ Wrong Key!</p>
+  <button id="loginBtn" 
+          class="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 hover:opacity-90 text-white font-semibold shadow-lg relative">
+    <span id="loginText">Login</span>
+    <div id="loginSpinner" class="btn-spinner hidden"></div>
+  </button>
+  <p class="mt-6 text-white">Join our Telegram channel for updates:</p>
+  <a href="https://t.me/Kami_Flex2" target="_blank" 
+     class="inline-block mt-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-bold shadow-lg transform transition hover:scale-105 hover:shadow-2xl">
+    🔗 Join Telegram
+  </a>
+</div>
+
+<!-- MAIN SCREEN -->
+<div id="mainScreen" class="hidden w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative">
+  <!-- Back Button -->
+  <button onclick="goBack()" class="absolute top-3 left-3 text-white text-lg font-bold px-3 py-1 rounded-lg bg-black/40 hover:bg-black/60">
+    ⬅ Back
+  </button>
+
+  <h1 class="text-4xl bunny-title font-extrabold text-center mb-8 text-white tracking-wider">
+    ⚡ Bunny Broken 💔 <br> SIM Database
+  </h1>
+
+  <!-- Input & Button -->
+  <div class="flex gap-3 mb-2">
+    <input id="phoneInput" type="text" placeholder="Enter phone number (03xxxxxxxxx)" 
+           class="flex-1 px-4 py-3 rounded-lg border border-white/30 bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+    <button id="searchBtn" 
+            class="px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 hover:opacity-90 text-white font-semibold shadow-lg">
+      🔍 Search
+    </button>
+  </div>
+  <p id="phoneError" class="text-red-400 font-semibold mb-4 hidden">⚠️ Please enter a phone number!</p>
+
+  <!-- Loading -->
+  <div id="loadingArea" class="hidden text-center mt-6 text-white text-xl font-bold">
+    <div class="spinner"></div>
+    <p>Searching<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></p>
   </div>
 
-  <script>
-    async function validateNumber() {
-      const num = document.getElementById("numberInput").value.trim();
-      const msg = document.getElementById("message");
-      const result = document.getElementById("result");
+  <!-- Results -->
+  <div id="resultArea" class="space-y-4 mt-6"></div>
+</div>
 
-      msg.innerHTML = "";
-      result.innerHTML = "";
+<script>
+const correctKey = "Kami123"; 
+const loginScreen = document.getElementById("loginScreen");
+const mainScreen = document.getElementById("mainScreen");
+const loginKey = document.getElementById("loginKey");
+const loginBtn = document.getElementById("loginBtn");
+const loginText = document.getElementById("loginText");
+const loginSpinner = document.getElementById("loginSpinner");
+const loginError = document.getElementById("loginError");
 
-      const format1 = /^92\d{10}$/;
-      const format2 = /^03\d{9}$/;
-      const format3 = /^3\d{9}$/;
+// ✅ Check saved login
+if(localStorage.getItem("kamiLogin") === "true"){
+  loginScreen.classList.add("hidden");
+  mainScreen.classList.remove("hidden");
+}
 
-      if (format1.test(num) || format2.test(num) || format3.test(num)) {
-        msg.innerHTML = "<div class='loader'>⏳ Loading... Please wait</div>";
-        try {
-          // ✅ call backend API
-          let response = await fetch(`/api/search?phone=${num}`);
-          let data = await response.json();
+// LOGIN LOGIC
+loginBtn.addEventListener("click", () => {
+  const key = loginKey.value.trim();
+  if(!key){ 
+    loginError.innerText = "⚠️ Please enter login key!";
+    loginError.classList.remove("hidden");
+    return; 
+  }
+  loginText.classList.add("opacity-0");
+  loginSpinner.classList.remove("hidden");
+  loginError.classList.add("hidden");
 
-          if (data && Object.keys(data).length > 0) {
-            msg.innerHTML = "<div class='success'>😘 Han Meri Jan Your Mission Is Completed 🙈</div>";
-            
-            // Design card me data show
-            let html = `<div class='data-card'>`;
-            for (const key in data) {
-              html += `<p><b>${key.toUpperCase()}:</b> ${data[key]}</p>`;
-            }
-            html += `<button class='copy-btn' onclick='copyData(${JSON.stringify(JSON.stringify(data))})'>📋 Copy Data</button>`;
-            html += `</div>`;
-            result.innerHTML = html;
-
-          } else {
-            msg.innerHTML = "<div class='error'>😌 Sorry Babu Apki Data Available Nahi 🥺</div>";
-          }
-        } catch (error) {
-          msg.innerHTML = "<div class='error'>😌 Sorry Babu API Se Connection Nahi Ban Saka 🥺</div>";
-        }
-      } else {
-        msg.innerHTML = "<div class='error'>❌ Please enter valid Number format!</div>";
-      }
+  setTimeout(() => {
+    if(key === correctKey){
+      localStorage.setItem("kamiLogin","true");
+      loginScreen.classList.add("hidden");
+      mainScreen.classList.remove("hidden");
+    } else {
+      loginError.innerText = "❌ Wrong Key!";
+      loginError.classList.remove("hidden");
     }
+    loginText.classList.remove("opacity-0");
+    loginSpinner.classList.add("hidden");
+  }, 1000);
+});
 
-    function copyData(dataStr) {
-      navigator.clipboard.writeText(JSON.parse(dataStr));
-      alert("✅ Data copied to clipboard!");
+// SIM DATABASE LOGIC
+const searchBtn = document.getElementById("searchBtn");
+const phoneInput = document.getElementById("phoneInput");
+const phoneError = document.getElementById("phoneError");
+const loadingArea = document.getElementById("loadingArea");
+const resultArea = document.getElementById("resultArea");
+
+searchBtn.addEventListener("click", async () => {
+  const phone = phoneInput.value.trim();
+  if (!phone) {
+    phoneError.style.display = "block";
+    return;
+  }
+  phoneError.style.display = "none";
+  resultArea.innerHTML = "";
+  loadingArea.classList.remove("hidden");
+
+  try {
+    const res = await fetch(`/api/search?phone=${phone}`);
+    const data = await res.json();
+    loadingArea.classList.add("hidden");
+
+    if (data.records && data.records.length > 0) {
+      data.records.forEach((record) => {
+        const card = document.createElement("div");
+        card.className = `p-6 rounded-xl shadow-2xl bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 text-white border border-white/20`;
+        card.innerHTML = `
+          <h2 class="text-xl font-bold mb-2">🥰 Han Meri Jan Apki Mission Completed 🙈</h2>
+          <p class="mb-1"><strong>👤 Name:</strong> ${record.Name || "N/A"}</p>
+          <p class="mb-1"><strong>📱 Mobile:</strong> ${record.Mobile || "N/A"}</p>
+          <p class="mb-1"><strong>🌍 Country:</strong> ${record.Country || "N/A"}</p>
+          <p class="mb-1"><strong>🆔 CNIC:</strong> ${record.CNIC || "N/A"}</p>
+          <p class="mb-3"><strong>🏠 Address:</strong> ${record.Address || "N/A"}</p>
+          <button onclick="copyDetails(this)" class="px-4 py-2 rounded-lg bg-black/40 hover:bg-black/60 text-white">📋 Copy</button>
+        `;
+        resultArea.appendChild(card);
+      });
+    } else {
+      resultArea.innerHTML = `<p class="text-red-300 font-semibold text-center">❌ No record found.</p>`;
     }
-  </script>
+  } catch (error) {
+    loadingArea.classList.add("hidden");
+    resultArea.innerHTML = `<p class="text-red-300 font-semibold text-center">⚠️ Error fetching data.</p>`;
+  }
+});
+
+// ✅ Copy function
+function copyDetails(btn){
+  const text = btn.parentElement.innerText;
+  navigator.clipboard.writeText(text);
+  btn.innerText = "✅ Copied!";
+  setTimeout(()=>{ btn.innerText="📋 Copy"; },2000);
+}
+
+// ✅ Back button function
+function goBack(){
+  localStorage.removeItem("kamiLogin");
+  window.location.href = "index.html";
+}
+</script>
+
+<!-- ✅ Extra Ads Script at bottom -->
+<script src="https://fpyf8.com/88/tag.min.js" data-zone="174168" async data-cfasync="false"></script>
+
 </body>
 </html>
