@@ -162,7 +162,7 @@ searchBtn.addEventListener("click", async () => {
   loadingArea.classList.remove("hidden");
 
   try {
-    const res = await fetch(`/api/search?phone=${phone}`);
+    const res = await fetch(`/api/database?phone=${phone}`);
     const data = await res.json();
     loadingArea.classList.add("hidden");
 
