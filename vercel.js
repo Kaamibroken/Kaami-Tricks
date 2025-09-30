@@ -12,32 +12,28 @@
     { "src": "jazz.js", "use": "@vercel/static" },
     { "src": "sports.js", "use": "@vercel/static" },
     { "src": "file.html", "use": "@vercel/static" },
-    { "src": "database.html", "use": "@vercel/static" },
+    { "src": "temp.html", "use": "@vercel/static" },
     { "src": "public/ads.txt", "use": "@vercel/static" },
     { "src": "images/**", "use": "@vercel/static" },
+    { "src": "tempmail.js", "use": "@vercel/node" },
     { "src": "database.js", "use": "@vercel/node" },
-    { "src": "fake.js", "use": "@vercel/node" },
     { "src": "database.html", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/", "dest": "/index.html" },
-    { "src": "/", "dest": "/tool.html" },
-    { "src": "/", "dest": "/jazztv.html" },
-    { "src": "/", "dest": "/jazz.html" },
-    { "src": "/", "dest": "/zong.html" },
-    { "src": "/", "dest": "/file.html" },
-    { "src": "/channels.js", "dest": "/channel.js" },
+    { "src": "/tool", "dest": "/tool.html" },
+    { "src": "/jazztv", "dest": "/jazztv.html" },
+    { "src": "/jazz", "dest": "/jazz.html" },
+    { "src": "/zong", "dest": "/zong.html" },
+    { "src": "/file", "dest": "/file.html" },
+    { "src": "/channels.js", "dest": "/channels.js" },
     { "src": "/jazz.js", "dest": "/jazz.js" },
-    { "src": "/temp.html", "dest": "/temp.html" },
     { "src": "/sports.js", "dest": "/sports.js" },
     { "src": "/ads.txt", "dest": "/public/ads.txt" },
-    { "src": "/", "dest": "/sports.html" },
-    { "src": "/api/fake", "dest": "/fake.js" },
+    { "src": "/sports", "dest": "/sports.html" },
+    { "src": "/api/tempmail", "dest": "/tempmail.js" },
+    { "src": "/temp", "dest": "/temp.html" },
     { "src": "/api/(.*)", "dest": "/database.js" },
-    { "src": "/", "dest": "/database.html" }
+    { "src": "/database", "dest": "/database.html" }
   ]
 }
-
-
-
-
