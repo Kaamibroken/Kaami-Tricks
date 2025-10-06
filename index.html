@@ -39,7 +39,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: gradientMove 8s ease infinite;
-      text-shadow: 0px 0px 25px rgba(255,255,255,0.3);
+      text-shadow: 0px 0px 25px rgba(255,255,255,0.5);
     }
     @keyframes gradientMove {
       0% { background-position: 0% 50%; }
@@ -62,12 +62,29 @@
 
 <!-- 🔥 Background Video -->
 <video autoplay muted loop id="bgVideo">
-  <source src="yourvideo.mp4" type="video/mp4">
+  <source src="images/background.mp4" type="video/mp4">
 </video>
 <div class="overlay"></div>
 
+<!-- LOGIN SCREEN -->
+<div id="loginPage" class="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 text-center">
+  <h1 class="text-3xl bunny-title mb-6">
+    💔 BUNNY BROKEN 💔 <br> 🎭 DATABASE 🎭
+  </h1>
+  <input id="loginKey" type="password" placeholder="Enter Access Key"
+         class="w-full px-4 py-3 mb-4 rounded-lg border border-white/30 bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400" />
+  <button onclick="checkLogin()" 
+          class="w-full px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 hover:opacity-90 text-white font-semibold shadow-lg">
+    🚪 Enter
+  </button>
+  <p id="loginError" class="hidden text-red-400 mt-4 font-semibold">❌ Wrong Key, Try Again!</p>
+</div>
+
 <!-- MAIN SCREEN -->
-<div class="w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative">
+<div id="mainPage" class="hidden w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative">
+
+  <!-- 🔥 Logo Option -->
+  <img src="images/logo.png" alt="Logo" class="mx-auto mb-4 w-24 h-24 rounded-full shadow-lg">
 
   <h1 class="text-4xl bunny-title font-extrabold text-center mb-8 tracking-wider">
     ⚡ Bunny Broken 💔 <br> SIM Database
@@ -94,6 +111,17 @@
 </div>
 
 <script>
+function checkLogin(){
+  const key = document.getElementById("loginKey").value;
+  if(key === "1234"){  // ✅ Access key
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("mainPage").classList.remove("hidden");
+  } else {
+    document.getElementById("loginError").classList.remove("hidden");
+    setTimeout(()=>{ document.getElementById("loginError").classList.add("hidden"); },2000);
+  }
+}
+
 const searchBtn = document.getElementById("searchBtn");
 const phoneInput = document.getElementById("phoneInput");
 const loadingArea = document.getElementById("loadingArea");
@@ -118,7 +146,7 @@ searchBtn.addEventListener("click", async () => {
       data.records.forEach((record) => {
         const card = document.createElement("div");
         card.className = `p-6 rounded-xl shadow-2xl text-white border border-white/20`;
-        card.style.backgroundImage = "url('yourimage.jpg')"; // 🔥 Apna image yaha dalna
+        card.style.backgroundImage = "url('images/card.jpg')"; // ✅ Card background
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
 
