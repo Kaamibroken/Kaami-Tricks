@@ -1,116 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kami Flex Tube 🎬</title>
+  <title>Kami Flex Tube</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#0f0f0f] text-white font-sans min-h-screen">
+<body class="bg-gray-100 flex flex-col items-center p-6">
+  <h1 class="text-3xl font-bold mb-6 text-red-600">Kami Flex Tube 🔴</h1>
 
-  <!-- Header -->
-  <header class="flex items-center justify-between px-4 py-3 bg-[#202020] sticky top-0 z-10">
-    <h1 class="text-2xl font-bold text-red-500">Kami Flex Tube</h1>
-    <input id="searchInput" type="text" placeholder="Search YouTube videos..."
-      class="w-1/2 p-2 rounded-lg bg-[#121212] text-white focus:outline-none">
-    <button id="searchBtn"
-      class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg ml-2 font-semibold">Search</button>
-  </header>
-
-  <!-- Results -->
-  <main id="results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
-    <p class="text-gray-400 text-center col-span-full mt-10">Search something to start 🎥</p>
-  </main>
-
-  <!-- Player Modal -->
-  <div id="playerModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center z-50">
-    <div class="bg-[#181818] rounded-xl shadow-xl w-[90%] md:w-[60%] p-4 relative">
-      <button onclick="closePlayer()" class="absolute top-2 right-3 text-white text-2xl">✖</button>
-      <video id="videoPlayer" controls class="w-full rounded-lg"></video>
-      <div id="downloadLinks" class="mt-4 space-y-2"></div>
-    </div>
+  <div class="flex w-full max-w-md gap-2 mb-6">
+    <input id="query" type="text" placeholder="Search YouTube videos..." 
+      class="flex-grow p-3 border rounded-lg focus:ring-2 focus:ring-red-400 outline-none">
+    <button onclick="searchVideos()" 
+      class="px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Search</button>
   </div>
 
-  <footer class="text-center py-4 text-gray-500 bg-[#202020]">
-    ❤️ Powered by Kami Flex Tube
-  </footer>
+  <div id="results" class="grid gap-4 w-full max-w-4xl"></div>
 
   <script>
     async function searchVideos() {
-      const query = document.getElementById("searchInput").value.trim();
-      const results = document.getElementById("results");
-      results.innerHTML = `<p class="text-center text-gray-400">🔍 Searching...</p>`;
+      const query = document.getElementById("query").value.trim();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "<p class='text-gray-500'>🔍 Searching...</p>";
 
       try {
-        const res = await fetch(`/api/tube?action=search&query=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
         const data = await res.json();
-        const videos = data.result || [];
 
-        if (videos.length === 0) {
-          results.innerHTML = `<p class="text-center text-gray-400">⚠️ No videos found.</p>`;
+        if (!data || !data.data || data.data.length === 0) {
+          resultsDiv.innerHTML = "<p class='text-red-500 font-semibold'>⚠️ No videos found.</p>";
           return;
         }
 
-        results.innerHTML = videos.map(v => `
-          <div class="bg-[#181818] p-3 rounded-lg hover:bg-[#202020] transition">
-            <img src="${v.thumbnail}" class="rounded-lg w-full mb-2">
-            <h3 class="font-bold mb-1 text-white">${v.title}</h3>
-            <p class="text-gray-400 text-sm">${v.channel} • ${v.duration}</p>
-            <button onclick="playVideo('${v.url}')" class="bg-red-600 hover:bg-red-700 mt-2 w-full py-2 rounded-lg font-semibold">▶ Play / Download</button>
+        resultsDiv.innerHTML = data.data.map(video => `
+          <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+            <img src="${video.thumbnail}" alt="${video.title}" class="rounded-lg w-full">
+            <h2 class="font-bold mt-2">${video.title}</h2>
+            <p class="text-sm text-gray-500">${video.duration}</p>
+            <button onclick="downloadVideo('${video.url}')"
+              class="mt-3 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600">⬇ Download</button>
           </div>
         `).join("");
       } catch (err) {
-        results.innerHTML = `<p class="text-center text-gray-400">❌ Failed to load videos.</p>`;
+        console.error(err);
+        resultsDiv.innerHTML = "<p class='text-red-500'>❌ Failed to load videos (proxy needed).</p>";
       }
     }
 
-    async function playVideo(url) {
-      const modal = document.getElementById("playerModal");
-      const player = document.getElementById("videoPlayer");
-      const downloadLinks = document.getElementById("downloadLinks");
-
-      modal.classList.remove("hidden");
-      player.src = "";
-
+    async function downloadVideo(url) {
+      const btn = event.target;
+      btn.textContent = "⏳ Loading...";
       try {
-        const res = await fetch(`/api/tube?action=download&url=${encodeURIComponent(url)}`);
+        const res = await fetch(`/api/download?url=${encodeURIComponent(url)}`);
         const data = await res.json();
 
-        const vidUrl = data.result?.video?.[0]?.url || "";
-        player.src = vidUrl;
-
-        downloadLinks.innerHTML = `
-          <h2 class="text-lg font-bold mb-2 text-white">Download Options</h2>
-          ${data.result?.video?.map(v => `
-            <a href="${v.url}" target="_blank"
-               class="block bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg text-center font-semibold">
-               🎥 ${v.quality} (${v.type})
-            </a>
-          `).join("") || "No video links found."}
-
-          ${data.result?.audio?.length ? `
-          <h2 class="text-lg font-bold mt-4 mb-2 text-white">Audio (MP3)</h2>
-          ${data.result.audio.map(a => `
-            <a href="${a.url}" target="_blank"
-               class="block bg-green-600 hover:bg-green-700 px-3 py-2 rounded-lg text-center font-semibold">
-               🎵 ${a.type}
-            </a>
-          `).join("")}` : ""}
-        `;
+        if (data?.data?.video) {
+          const vid = data.data.video;
+          const aud = data.data.audio?.[0]?.url;
+          let html = "<p class='mt-2 text-sm text-gray-600'>Select Quality:</p>";
+          vid.forEach(q => {
+            html += `<a href="${q.url}" target="_blank" class="block mt-1 bg-green-500 text-white px-3 py-2 rounded">${q.quality}</a>`;
+          });
+          if (aud) {
+            html += `<a href="${aud}" target="_blank" class="block mt-1 bg-blue-500 text-white px-3 py-2 rounded">🎵 MP3</a>`;
+          }
+          btn.insertAdjacentHTML("afterend", html);
+        } else btn.textContent = "⚠️ No link found";
       } catch (err) {
-        downloadLinks.innerHTML = `<p class="text-gray-400">⚠️ Failed to load download links.</p>`;
+        console.error(err);
+        btn.textContent = "❌ Download failed";
       }
     }
-
-    function closePlayer() {
-      document.getElementById("playerModal").classList.add("hidden");
-      document.getElementById("videoPlayer").pause();
-    }
-
-    document.getElementById("searchBtn").addEventListener("click", searchVideos);
-    document.getElementById("searchInput").addEventListener("keydown", e => {
-      if (e.key === "Enter") searchVideos();
-    });
   </script>
 </body>
 </html>
