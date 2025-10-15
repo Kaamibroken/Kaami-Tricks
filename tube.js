@@ -19,15 +19,36 @@ export default async function handler(req, res) {
 
     const response = await fetch(apiUrl);
     const text = await response.text();
+
+    // Try to parse JSON safely
     let data;
     try {
       data = JSON.parse(text);
     } catch {
+      console.error("Non-JSON API response:", text.slice(0, 200));
       data = { raw: text };
     }
 
-    res.status(200).json(data);
+    // 🛠 Normalize the data so HTML can always read "result"
+    if (action === "search") {
+      const results =
+        data.result?.map(v => ({
+          title: v.title || "Untitled",
+          thumbnail: v.thumbnail || "",
+          url: v.url || "",
+          channel: v.author || v.channel || "Unknown",
+          duration: v.timestamp || v.duration || "",
+        })) || [];
+
+      return res.status(200).json({ result: results });
+    }
+
+    if (action === "download") {
+      return res.status(200).json(data);
+    }
+
   } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({ error: error.message });
   }
 }
