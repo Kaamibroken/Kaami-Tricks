@@ -1,9 +1,25 @@
 {
   "name": "kami-flex-tube",
   "version": "1.0.0",
-  "main": "api/tube.js",
+  "description": "YouTube Search & Downloader using PrinceTech API (with Node proxy)",
+  "main": "index.js",
   "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
   "dependencies": {
     "node-fetch": "^3.3.2"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "youtube",
+    "downloader",
+    "search",
+    "vercel",
+    "nodejs"
+  ],
+  "author": "Kami Flex",
+  "license": "MIT"
 }
