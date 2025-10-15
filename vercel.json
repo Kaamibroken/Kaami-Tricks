@@ -2,12 +2,10 @@
   "version": 2,
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
-    { "src": "database.js", "use": "@vercel/node" },
-    { "src": "database.html", "use": "@vercel/static" }
+    { "src": "api/tube.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/api/(.*)", "dest": "/database.js" },
-    { "src": "/", "dest": "/database.html" }
+    { "src": "/api/(.*)", "dest": "/api/tube.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
