@@ -1,181 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bunny Broken 💔 SIM Database</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kami Flex Tube</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
+    body {
+      background-color: #0f0f0f;
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
     }
-    /* 🔥 Video Background */
-    #bgVideo {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      z-index: -1;
+    .card {
+      background-color: #181818;
+      border-radius: 10px;
+      transition: transform 0.2s ease;
     }
-    /* 🔥 Dark overlay */
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      z-index: -1;
+    .card:hover {
+      transform: scale(1.02);
     }
-    /* 🔥 Animated Gradient Title */
-    .bunny-title {
-      font-weight: 900;
-      background: linear-gradient(270deg, #ff0080, #7928ca, #00ffcc, #ffbf00, #ff0080);
-      background-size: 1000% 1000%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientMove 8s ease infinite;
-      text-shadow: 0px 0px 25px rgba(255,255,255,0.5);
-    }
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    /* Loader */
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top: 4px solid #ff5f6d;
-      border-radius: 50%;
-      width: 40px; height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 12px auto;
-    }
-    @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
+<body class="min-h-screen">
 
-<!-- 🔥 Background Video -->
-<video autoplay muted loop id="bgVideo">
-  <source src="images/background.mp4" type="video/mp4">
-</video>
-<div class="overlay"></div>
-
-<!-- LOGIN SCREEN -->
-<div id="loginPage" class="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 text-center">
-  <h1 class="text-3xl bunny-title mb-6">
-    💔 BUNNY BROKEN 💔 <br> 🎭 DATABASE 🎭
-  </h1>
-  <input id="loginKey" type="password" placeholder="Enter Access Key"
-         class="w-full px-4 py-3 mb-4 rounded-lg border border-white/30 bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400" />
-  <button onclick="checkLogin()" 
-          class="w-full px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 hover:opacity-90 text-white font-semibold shadow-lg">
-    🚪 Enter
-  </button>
-  <p id="loginError" class="hidden text-red-400 mt-4 font-semibold">❌ Wrong Key, Try Again!</p>
-</div>
-
-<!-- MAIN SCREEN -->
-<div id="mainPage" class="hidden w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative">
-
-  <!-- 🔥 Logo Option -->
-  <img src="images/logo.png" alt="Logo" class="mx-auto mb-4 w-24 h-24 rounded-full shadow-lg">
-
-  <h1 class="text-4xl bunny-title font-extrabold text-center mb-8 tracking-wider">
-    ⚡ Bunny Broken 💔 <br> SIM Database
-  </h1>
-
-  <!-- Input & Button -->
-  <div class="flex gap-3 mb-2">
-    <input id="phoneInput" type="text" placeholder="Enter phone number (03xxxxxxxxx)" 
-           class="flex-1 px-4 py-3 rounded-lg border border-white/30 bg-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400" />
-    <button id="searchBtn" 
-            class="px-5 py-3 rounded-lg bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 hover:opacity-90 text-white font-semibold shadow-lg">
-      🔍 Search
-    </button>
-  </div>
-
-  <!-- Loading -->
-  <div id="loadingArea" class="hidden text-center mt-6 text-white text-xl font-bold">
-    <div class="spinner"></div>
-    <p>Searching...</p>
-  </div>
+  <!-- Header -->
+  <header class="flex items-center justify-between px-6 py-4 bg-[#202020] shadow-md sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="text-2xl font-extrabold text-red-500">Kami Flex</div>
+      <span class="text-white text-xl font-semibold">Tube</span>
+    </div>
+    <div class="flex-1 mx-4">
+      <input id="searchInput" type="search" placeholder="Search videos..." 
+        class="w-full px-4 py-2 rounded-full bg-[#121212] text-white border border-gray-700 focus:border-red-500 outline-none" />
+    </div>
+    <button id="searchBtn" class="px-4 py-2 bg-red-600 rounded-full hover:bg-red-700">Search</button>
+  </header>
 
   <!-- Results -->
-  <div id="resultArea" class="space-y-4 mt-6"></div>
-</div>
+  <main class="p-6">
+    <div id="status" class="text-center text-gray-400 mt-4">Type something to search...</div>
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6"></div>
+  </main>
 
 <script>
-function checkLogin(){
-  const key = document.getElementById("loginKey").value;
-  if(key === "1234"){  // ✅ Access key
-    document.getElementById("loginPage").classList.add("hidden");
-    document.getElementById("mainPage").classList.remove("hidden");
-  } else {
-    document.getElementById("loginError").classList.remove("hidden");
-    setTimeout(()=>{ document.getElementById("loginError").classList.add("hidden"); },2000);
+const API_BASE = location.origin + '/api/tube';
+
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+const grid = document.getElementById('grid');
+const statusEl = document.getElementById('status');
+
+searchBtn.addEventListener('click', search);
+searchInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') search(); });
+
+async function search(){
+  const query = searchInput.value.trim();
+  if(!query) return;
+  statusEl.innerText = 'Searching...';
+  grid.innerHTML = '';
+  try {
+    const res = await fetch(`${API_BASE}?mode=search&q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    let videos = data.data || data.results || data.items || [];
+    if (!videos.length) { statusEl.innerText = 'No videos found.'; return; }
+
+    statusEl.innerText = `Found ${videos.length} videos`;
+
+    videos.forEach(v => {
+      const videoUrl = v.url || `https://www.youtube.com/watch?v=${v.videoId}`;
+      const thumb = v.thumbnail || v.thumb || '';
+      const title = v.title || 'Untitled Video';
+      const card = document.createElement('div');
+      card.className = 'card p-2';
+      card.innerHTML = `
+        <img src="${thumb}" alt="${title}" class="w-full rounded-lg mb-2">
+        <h3 class="font-semibold text-sm mb-1">${title}</h3>
+        <button class="w-full bg-red-600 rounded-lg py-1 hover:bg-red-700" onclick="download('${videoUrl}')">⬇ Download</button>
+      `;
+      grid.appendChild(card);
+    });
+  } catch (e) {
+    console.error(e);
+    statusEl.innerText = 'Failed to load videos.';
   }
 }
 
-const searchBtn = document.getElementById("searchBtn");
-const phoneInput = document.getElementById("phoneInput");
-const loadingArea = document.getElementById("loadingArea");
-const resultArea = document.getElementById("resultArea");
-
-searchBtn.addEventListener("click", async () => {
-  const phone = phoneInput.value.trim();
-  if (!phone) {
-    alert("⚠️ Please enter a phone number!");
-    return;
-  }
-
-  resultArea.innerHTML = "";
-  loadingArea.classList.remove("hidden");
-
+async function download(videoUrl){
   try {
-    const res = await fetch(`/api/search?phone=${phone}`);
+    const res = await fetch(`${API_BASE}?mode=download&url=${encodeURIComponent(videoUrl)}`);
     const data = await res.json();
-    loadingArea.classList.add("hidden");
-
-    if (data.records && data.records.length > 0) {
-      data.records.forEach((record) => {
-        const card = document.createElement("div");
-        card.className = `p-6 rounded-xl shadow-2xl text-white border border-white/20`;
-        card.style.backgroundImage = "url('images/card.jpg')"; // ✅ Card background
-        card.style.backgroundSize = "cover";
-        card.style.backgroundPosition = "center";
-
-        card.innerHTML = `
-          <h2 class="text-xl font-bold mb-2">🥰 Han Meri Jan Apki Mission Completed 🙈</h2>
-          <p class="mb-1"><strong>👤 Name:</strong> ${record.Name || "N/A"}</p>
-          <p class="mb-1"><strong>📱 Mobile:</strong> ${record.Mobile || "N/A"}</p>
-          <p class="mb-1"><strong>🌍 Country:</strong> ${record.Country || "N/A"}</p>
-          <p class="mb-1"><strong>🆔 CNIC:</strong> ${record.CNIC || "N/A"}</p>
-          <p class="mb-3"><strong>🏠 Address:</strong> ${record.Address || "N/A"}</p>
-          <button onclick="copyDetails(this)" class="px-4 py-2 rounded-lg bg-black/40 hover:bg-black/60 text-white">📋 Copy</button>
-        `;
-        resultArea.appendChild(card);
-      });
+    const link = data.url || data.download || data.link || (data.data && data.data.url);
+    if (link && link.startsWith('http')) {
+      window.open(link, '_blank');
     } else {
-      resultArea.innerHTML = `<p class="text-red-300 font-semibold text-center text-xl">🙈 Sorry, Apki Data Available Nahi</p>`;
+      alert('No direct download link found.');
     }
-  } catch (error) {
-    loadingArea.classList.add("hidden");
-    resultArea.innerHTML = `<p class="text-red-300 font-semibold text-center">⚠️ Error fetching data.</p>`;
+  } catch (e) {
+    console.error(e);
+    window.open(`https://api.princetechn.com/api/download/ytdlv2?apikey=prince&url=${encodeURIComponent(videoUrl)}`);
   }
-});
-
-// ✅ Copy function
-function copyDetails(btn){
-  const text = btn.parentElement.innerText;
-  navigator.clipboard.writeText(text);
-  btn.innerText = "✅ Copied!";
-  setTimeout(()=>{ btn.innerText="📋 Copy"; },2000);
 }
 </script>
 
