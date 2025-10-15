@@ -1,13 +1,9 @@
 {
   "name": "kami-flex-tube",
   "version": "1.0.0",
-  "description": "Kami Flex Tube - YouTube Search & Downloader (by Kami Solangi)",
   "main": "api/tube.js",
   "type": "module",
   "dependencies": {
     "node-fetch": "^3.3.2"
-  },
-  "engines": {
-    "node": ">=18"
   }
 }
