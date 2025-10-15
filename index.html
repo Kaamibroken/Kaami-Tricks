@@ -1,106 +1,116 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kami Flex Tube</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kami Flex Tube 🎬</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background-color: #0f0f0f;
-      color: #fff;
-      font-family: 'Roboto', sans-serif;
-    }
-    .card {
-      background-color: #181818;
-      border-radius: 10px;
-      transition: transform 0.2s ease;
-    }
-    .card:hover {
-      transform: scale(1.02);
-    }
-  </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-[#0f0f0f] text-white font-sans min-h-screen">
 
   <!-- Header -->
-  <header class="flex items-center justify-between px-6 py-4 bg-[#202020] shadow-md sticky top-0 z-50">
-    <div class="flex items-center gap-3">
-      <div class="text-2xl font-extrabold text-red-500">Kami Flex</div>
-      <span class="text-white text-xl font-semibold">Tube</span>
-    </div>
-    <div class="flex-1 mx-4">
-      <input id="searchInput" type="search" placeholder="Search videos..." 
-        class="w-full px-4 py-2 rounded-full bg-[#121212] text-white border border-gray-700 focus:border-red-500 outline-none" />
-    </div>
-    <button id="searchBtn" class="px-4 py-2 bg-red-600 rounded-full hover:bg-red-700">Search</button>
+  <header class="flex items-center justify-between px-4 py-3 bg-[#202020] sticky top-0 z-10">
+    <h1 class="text-2xl font-bold text-red-500">Kami Flex Tube</h1>
+    <input id="searchInput" type="text" placeholder="Search YouTube videos..."
+      class="w-1/2 p-2 rounded-lg bg-[#121212] text-white focus:outline-none">
+    <button id="searchBtn"
+      class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg ml-2 font-semibold">Search</button>
   </header>
 
   <!-- Results -->
-  <main class="p-6">
-    <div id="status" class="text-center text-gray-400 mt-4">Type something to search...</div>
-    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6"></div>
+  <main id="results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+    <p class="text-gray-400 text-center col-span-full mt-10">Search something to start 🎥</p>
   </main>
 
-<script>
-const API_BASE = location.origin + '/api/tube';
+  <!-- Player Modal -->
+  <div id="playerModal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center z-50">
+    <div class="bg-[#181818] rounded-xl shadow-xl w-[90%] md:w-[60%] p-4 relative">
+      <button onclick="closePlayer()" class="absolute top-2 right-3 text-white text-2xl">✖</button>
+      <video id="videoPlayer" controls class="w-full rounded-lg"></video>
+      <div id="downloadLinks" class="mt-4 space-y-2"></div>
+    </div>
+  </div>
 
-const searchBtn = document.getElementById('searchBtn');
-const searchInput = document.getElementById('searchInput');
-const grid = document.getElementById('grid');
-const statusEl = document.getElementById('status');
+  <footer class="text-center py-4 text-gray-500 bg-[#202020]">
+    ❤️ Powered by Kami Flex Tube
+  </footer>
 
-searchBtn.addEventListener('click', search);
-searchInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') search(); });
+  <script>
+    async function searchVideos() {
+      const query = document.getElementById("searchInput").value.trim();
+      const results = document.getElementById("results");
+      results.innerHTML = `<p class="text-center text-gray-400">🔍 Searching...</p>`;
 
-async function search(){
-  const query = searchInput.value.trim();
-  if(!query) return;
-  statusEl.innerText = 'Searching...';
-  grid.innerHTML = '';
-  try {
-    const res = await fetch(`${API_BASE}?mode=search&q=${encodeURIComponent(query)}`);
-    const data = await res.json();
-    let videos = data.data || data.results || data.items || [];
-    if (!videos.length) { statusEl.innerText = 'No videos found.'; return; }
+      try {
+        const res = await fetch(`/api/tube?action=search&query=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        const videos = data.result || [];
 
-    statusEl.innerText = `Found ${videos.length} videos`;
+        if (videos.length === 0) {
+          results.innerHTML = `<p class="text-center text-gray-400">⚠️ No videos found.</p>`;
+          return;
+        }
 
-    videos.forEach(v => {
-      const videoUrl = v.url || `https://www.youtube.com/watch?v=${v.videoId}`;
-      const thumb = v.thumbnail || v.thumb || '';
-      const title = v.title || 'Untitled Video';
-      const card = document.createElement('div');
-      card.className = 'card p-2';
-      card.innerHTML = `
-        <img src="${thumb}" alt="${title}" class="w-full rounded-lg mb-2">
-        <h3 class="font-semibold text-sm mb-1">${title}</h3>
-        <button class="w-full bg-red-600 rounded-lg py-1 hover:bg-red-700" onclick="download('${videoUrl}')">⬇ Download</button>
-      `;
-      grid.appendChild(card);
-    });
-  } catch (e) {
-    console.error(e);
-    statusEl.innerText = 'Failed to load videos.';
-  }
-}
-
-async function download(videoUrl){
-  try {
-    const res = await fetch(`${API_BASE}?mode=download&url=${encodeURIComponent(videoUrl)}`);
-    const data = await res.json();
-    const link = data.url || data.download || data.link || (data.data && data.data.url);
-    if (link && link.startsWith('http')) {
-      window.open(link, '_blank');
-    } else {
-      alert('No direct download link found.');
+        results.innerHTML = videos.map(v => `
+          <div class="bg-[#181818] p-3 rounded-lg hover:bg-[#202020] transition">
+            <img src="${v.thumbnail}" class="rounded-lg w-full mb-2">
+            <h3 class="font-bold mb-1 text-white">${v.title}</h3>
+            <p class="text-gray-400 text-sm">${v.channel} • ${v.duration}</p>
+            <button onclick="playVideo('${v.url}')" class="bg-red-600 hover:bg-red-700 mt-2 w-full py-2 rounded-lg font-semibold">▶ Play / Download</button>
+          </div>
+        `).join("");
+      } catch (err) {
+        results.innerHTML = `<p class="text-center text-gray-400">❌ Failed to load videos.</p>`;
+      }
     }
-  } catch (e) {
-    console.error(e);
-    window.open(`https://api.princetechn.com/api/download/ytdlv2?apikey=prince&url=${encodeURIComponent(videoUrl)}`);
-  }
-}
-</script>
 
+    async function playVideo(url) {
+      const modal = document.getElementById("playerModal");
+      const player = document.getElementById("videoPlayer");
+      const downloadLinks = document.getElementById("downloadLinks");
+
+      modal.classList.remove("hidden");
+      player.src = "";
+
+      try {
+        const res = await fetch(`/api/tube?action=download&url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+
+        const vidUrl = data.result?.video?.[0]?.url || "";
+        player.src = vidUrl;
+
+        downloadLinks.innerHTML = `
+          <h2 class="text-lg font-bold mb-2 text-white">Download Options</h2>
+          ${data.result?.video?.map(v => `
+            <a href="${v.url}" target="_blank"
+               class="block bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg text-center font-semibold">
+               🎥 ${v.quality} (${v.type})
+            </a>
+          `).join("") || "No video links found."}
+
+          ${data.result?.audio?.length ? `
+          <h2 class="text-lg font-bold mt-4 mb-2 text-white">Audio (MP3)</h2>
+          ${data.result.audio.map(a => `
+            <a href="${a.url}" target="_blank"
+               class="block bg-green-600 hover:bg-green-700 px-3 py-2 rounded-lg text-center font-semibold">
+               🎵 ${a.type}
+            </a>
+          `).join("")}` : ""}
+        `;
+      } catch (err) {
+        downloadLinks.innerHTML = `<p class="text-gray-400">⚠️ Failed to load download links.</p>`;
+      }
+    }
+
+    function closePlayer() {
+      document.getElementById("playerModal").classList.add("hidden");
+      document.getElementById("videoPlayer").pause();
+    }
+
+    document.getElementById("searchBtn").addEventListener("click", searchVideos);
+    document.getElementById("searchInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") searchVideos();
+    });
+  </script>
 </body>
 </html>
