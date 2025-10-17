@@ -1,29 +1,27 @@
-import express from "express";
-import fetch from "node-fetch";
-import cors from "cors";
+import fetch from 'node-fetch';
 
-const app = express();
-const PORT = 3000;
+export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    const { inputText } = req.query;
 
-app.use(cors());
-app.use(express.static("public")); // serve HTML from 'public' folder
+    if (!inputText) {
+      return res.status(400).json({ error: 'Missing inputText parameter' });
+    }
 
-app.get("/api/imggen", async (req, res) => {
-  const { input } = req.query;
-  if (!input) return res.status(400).send("Missing input");
+    try {
+      const apiUrl = `https://botfather.cloud/Apis/ImgGen/client.php?inputText=${encodeURIComponent(inputText)}`;
+      const response = await fetch(apiUrl);
 
-  const url = `https://botfather.cloud/Apis/ImgGen/client.php?inputText=${encodeURIComponent(input)}`;
+      if (!response.ok) {
+        throw new Error('Failed to fetch image');
+      }
 
-  try {
-    const response = await fetch(url);
-    const text = await response.text();
-    res.send(text);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("⚠️ Network or API error");
+      const imageUrl = await response.text();
+      return res.status(200).json({ imageUrl });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  } else {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+}
